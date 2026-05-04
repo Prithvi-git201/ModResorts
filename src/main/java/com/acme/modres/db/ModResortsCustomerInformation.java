@@ -1,8 +1,8 @@
 package com.acme.modres.db;
 
-import javax.annotation.Resource;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import jakarta.annotation.Resource;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,18 +20,11 @@ public class ModResortsCustomerInformation {
   private DataSource dataSource;
 
   public ArrayList<String> getCustomerInformation() {
-    Connection conn = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
     ArrayList<String> customerInfo = new ArrayList<>();
 
-    try {
-      // Get a connection from the injected data source
-      conn = dataSource.getConnection();
-      // Create a prepared statement
-      stmt = conn.prepareStatement(SELECT_CUSTOMERS_QUERY);
-      // Execute the query
-      rs = stmt.executeQuery();
+    try (Connection conn = dataSource.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(SELECT_CUSTOMERS_QUERY);
+         ResultSet rs = stmt.executeQuery()) {
 
       // Process the results
       while (rs.next()) {
@@ -41,19 +34,8 @@ public class ModResortsCustomerInformation {
 
     } catch (SQLException e) {
       e.printStackTrace();
-    } finally {
-      // Close the result set, statement, and connection
-      try {
-        if (rs != null)
-          rs.close();
-        if (stmt != null)
-          stmt.close();
-        if (conn != null)
-          conn.close();
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
     }
+    
     return customerInfo;
   }
 }

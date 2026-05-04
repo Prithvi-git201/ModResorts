@@ -3,13 +3,13 @@ package com.acme.modres;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import com.ibm.websphere.servlet.response.ResponseUtils;
+import com.acme.modres.util.ResponseUtils;
 
 @WebServlet("/resorts/upper")
 public class UpperServlet extends HttpServlet {
