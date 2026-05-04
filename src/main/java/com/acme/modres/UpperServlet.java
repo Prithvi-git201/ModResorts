@@ -2,15 +2,15 @@ package com.acme.modres;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.ibm.websphere.servlet.response.ResponseUtils;
-
+import org.apache.commons.text.StringEscapeUtils;
 @WebServlet("/resorts/upper")
 public class UpperServlet extends HttpServlet {
 
@@ -26,9 +26,25 @@ public class UpperServlet extends HttpServlet {
     }
 
     String newStr = originalStr.toUpperCase();
-    newStr = ResponseUtils.encodeDataString(newStr);
+    // Replace WebSphere-specific ResponseUtils.encodeDataString with standard HTML escaping
+    newStr = escapeHtml(newStr);
 
     PrintWriter out = response.getWriter();
     out.print("<br/><b>upper case input " + newStr + "</b>");
+  }
+  
+  /**
+   * Escapes HTML special characters to prevent XSS attacks.
+   * Replaces WebSphere-specific ResponseUtils.encodeDataString.
+   */
+  private String escapeHtml(String input) {
+    if (input == null) {
+      return null;
+    }
+    return input.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#x27;");
   }
 }

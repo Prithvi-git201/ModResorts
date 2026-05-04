@@ -249,28 +249,49 @@ public class WeatherServlet extends HttpServlet {
     return "*********" + lastToKeep;
   }
 
+  /**
+   * Replaced WebSphere-specific ServerName API with environment variable approach.
+   * Use SERVER_NAME and SERVER_FULL_NAME environment variables for containerized deployment.
+   */
   private String configureEnvDiscovery() {
-
     String serverEnv = "";
-
-    serverEnv += com.ibm.websphere.runtime.ServerName.getDisplayName();
-    serverEnv += com.ibm.websphere.runtime.ServerName.getFullName();
-
+    
+    // Replace WebSphere-specific API with environment variables
+    String serverName = System.getenv("SERVER_NAME");
+    String serverFullName = System.getenv("SERVER_FULL_NAME");
+    
+    if (serverName != null) {
+      serverEnv += serverName;
+    }
+    if (serverFullName != null) {
+      serverEnv += serverFullName;
+    }
+    
     return serverEnv;
   }
 
+  /**
+   * Replaced WebSphere-specific IIOP/RMI JNDI lookup with standard JNDI configuration.
+   * Use JNDI_FACTORY and JNDI_PROVIDER_URL environment variables for containerized deployment.
+   */
   private InitialContext setInitialContextProps() {
-
-    Hashtable ht = new Hashtable();
-
-    ht.put("java.naming.factory.initial", "com.ibm.websphere.naming.WsnInitialContextFactory");
-    ht.put("java.naming.provider.url", "corbaloc:iiop:localhost:2809");
+    Hashtable<String, String> ht = new Hashtable<>();
+    
+    // Replace WebSphere-specific JNDI factory with configurable environment variables
+    String jndiFactory = System.getenv("JNDI_FACTORY");
+    String jndiProviderUrl = System.getenv("JNDI_PROVIDER_URL");
+    
+    // Use environment variables or fall back to standard defaults
+    ht.put("java.naming.factory.initial", 
+           jndiFactory != null ? jndiFactory : "org.apache.naming.java.javaURLContextFactory");
+    ht.put("java.naming.provider.url", 
+           jndiProviderUrl != null ? jndiProviderUrl : "");
 
     InitialContext ctx = null;
     try {
       ctx = new InitialContext(ht);
     } catch (NamingException e) {
-      e.printStackTrace();
+      logger.log(Level.WARNING, "Failed to create InitialContext. JNDI lookups may not work.", e);
     }
 
     return ctx;
