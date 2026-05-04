@@ -1,0 +1,86 @@
+{
+  "family": "modresorts-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::{{ACCOUNT_ID}}:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::{{ACCOUNT_ID}}:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "modresorts",
+      "image": "{{IMAGE_URI}}",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "JAVA_OPTS",
+          "value": "-Xmx512m -Xms256m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "docker"
+        },
+        {
+          "name": "SERVER_PORT",
+          "value": "8080"
+        },
+        {
+          "name": "SERVER_NAME",
+          "value": "modresorts-server"
+        },
+        {
+          "name": "SERVER_FULL_NAME",
+          "value": "modresorts-server-ecs"
+        },
+        {
+          "name": "TZ",
+          "value": "UTC"
+        },
+        {
+          "name": "DB_URL",
+          "value": "{{DB_URL}}"
+        },
+        {
+          "name": "DB_USERNAME",
+          "value": "{{DB_USERNAME}}"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "value": "{{DB_PASSWORD}}"
+        },
+        {
+          "name": "DB_DRIVER",
+          "value": "{{DB_DRIVER}}"
+        },
+        {
+          "name": "REDIS_HOST",
+          "value": "{{REDIS_HOST}}"
+        },
+        {
+          "name": "REDIS_PORT",
+          "value": "{{REDIS_PORT}}"
+        },
+        {
+          "name": "REDIS_PASSWORD",
+          "value": "{{REDIS_PASSWORD}}"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/modresorts",
+          "awslogs-region": "{{AWS_REGION}}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

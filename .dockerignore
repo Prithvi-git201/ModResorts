@@ -1,0 +1,69 @@
+# Docker ignore file for ModResorts Java application
+# Excludes unnecessary files from Docker build context
+
+# Maven build artifacts
+target/
+!target/*.war
+!target/*.jar
+
+# Maven wrapper (CRITICAL: excluded - use system mvn only)
+mvnw
+mvnw.cmd
+.mvn/
+
+# Gradle wrapper (CRITICAL: excluded - use system gradle only)
+gradlew
+gradlew.bat
+gradle/wrapper/
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.idea/
+.vscode/
+.settings/
+.project
+.classpath
+*.iml
+*.iws
+*.ipr
+.DS_Store
+
+# Documentation
+*.md
+!README.md
+docs/
+CONTRIBUTING.md
+LICENSE
+CODEOWNERS
+
+# Test files
+src/test/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Build files
+build/
+dist/
+out/
+
+# Migration artifacts
+migration-bundle/
+
+# Hidden gradle build file
+*.hideme

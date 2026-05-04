@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  modresorts-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: modresorts:latest
+    container_name: modresorts-app
+    ports:
+      - "8080:8080"
+    environment:
+      # Java JVM Options
+      - JAVA_OPTS=-Xmx512m -Xms256m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
+      
+      # Spring Boot Configuration
+      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      
+      # Application Info
+      - SERVER_NAME=modresorts-server
+      - SERVER_FULL_NAME=modresorts-server-docker
+      
+      # Database Configuration (externalized - connect to external DB)
+      - DB_URL=${DB_URL:-jdbc:h2:mem:testdb}
+      - DB_USERNAME=${DB_USERNAME:-sa}
+      - DB_PASSWORD=${DB_PASSWORD:-}
+      - DB_DRIVER=${DB_DRIVER:-org.h2.Driver}
+      
+      # Redis Configuration (externalized - connect to external Redis/ElastiCache)
+      - REDIS_HOST=${REDIS_HOST:-localhost}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      
+      # Timezone
+      - TZ=UTC
+    
+    volumes:
+      # Mount logs directory for persistence
+      - ./logs:/app/logs
+      # Mount config directory for external configuration
+      - ./config:/app/config
+    
+    networks:
+      - modresorts-network
+    
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    restart: unless-stopped
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  modresorts-network:
+    driver: bridge
+
+# Note: This docker-compose.yml contains ONLY the application service.
+# External services (databases, Redis, Kafka, etc.) should be provided separately.
+# Use environment variables to configure connections to external services.
