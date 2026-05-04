@@ -1,13 +1,13 @@
 package com.acme.modres.mbean.reservation;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.acme.modres.Constants;
 
 public class ReservationCheckerData {
   private ReservationList reservations;
-  private Date selectedDate;
+  private LocalDate selectedDate;
   private boolean available; // changed from Boolean to boolean
 
   public ReservationCheckerData(ReservationList reservations) {
@@ -19,13 +19,18 @@ public class ReservationCheckerData {
     return reservations;
   }
 
-  public Date getSelectedDate() {
+  /**
+   * Get selected date as LocalDate (java.time API)
+   * This replaces java.util.Date for cloud-native date handling
+   */
+  public LocalDate getSelectedDateAsLocalDate() {
     return selectedDate;
   }
 
   public boolean setSelectedDate(String dateStr) {
     try {
-      selectedDate = new SimpleDateFormat(Constants.DATA_FORMAT).parse(dateStr);
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Constants.DATA_FORMAT);
+      selectedDate = LocalDate.parse(dateStr, formatter);
     } catch (Exception e) {
       return false;
     }
