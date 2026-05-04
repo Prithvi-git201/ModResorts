@@ -21,12 +21,7 @@
       <version>7.0</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.ibm.websphere.appserver</groupId>
-      <artifactId>was_public</artifactId>
-      <version>9.0.0</version>
-      <scope>provided</scope>
-    </dependency>
+    <!-- Removed WebSphere-specific dependency (was_public) for container-native deployment -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
