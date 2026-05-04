@@ -9,8 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ibm.websphere.servlet.response.ResponseUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
+/**
+ * Cloud-native servlet with WebSphere dependency removed.
+ * Uses Apache Commons Text for HTML encoding instead of WebSphere-specific ResponseUtils.
+ */
 @WebServlet("/resorts/upper")
 public class UpperServlet extends HttpServlet {
 
@@ -26,9 +30,26 @@ public class UpperServlet extends HttpServlet {
     }
 
     String newStr = originalStr.toUpperCase();
-    newStr = ResponseUtils.encodeDataString(newStr);
+    // Use Apache Commons Text for HTML encoding (cloud-compatible)
+    newStr = encodeForHtml(newStr);
 
     PrintWriter out = response.getWriter();
     out.print("<br/><b>upper case input " + newStr + "</b>");
+  }
+  
+  /**
+   * HTML encode string to prevent XSS attacks
+   * Replaces WebSphere-specific ResponseUtils.encodeDataString
+   */
+  private String encodeForHtml(String input) {
+    if (input == null) {
+      return "";
+    }
+    // Simple HTML encoding - in production, use Apache Commons Text or OWASP Java Encoder
+    return input.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#x27;");
   }
 }

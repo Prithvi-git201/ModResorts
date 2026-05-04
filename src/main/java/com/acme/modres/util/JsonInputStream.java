@@ -1,51 +1,44 @@
 package com.acme.modres.util;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.google.gson.Gson;
 
-public class JsonInputStream extends FileInputStream {
+/**
+ * Cloud-native JSON input stream that works with any InputStream.
+ * This allows reading from classpath resources, S3, or any other source.
+ */
+public class JsonInputStream implements AutoCloseable {
 
-  private File file;
+  private InputStream inputStream;
 
-  public JsonInputStream(File file) throws FileNotFoundException {
-    super(file);
-    this.file = file;
+  public JsonInputStream(InputStream inputStream) {
+    this.inputStream = inputStream;
   }
 
   public Object parseJsonAs(Class<?> cls) {
-    if (file.exists()) {
-      JsonInputStream is = null;
-      Object jsonObject = null;
-      try {
-        is = new JsonInputStream(file);
-        Gson gson = new Gson();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        jsonObject = gson.fromJson(reader, cls);
-      } catch (Exception e) {
-        e.printStackTrace();
-      } catch (Throwable e) {
-        e.printStackTrace();
-      } finally {
-        if (is != null) {
-          try {
-            is.close();
-            is.read(); // test if file is closed
-          } catch (IOException e) {
-            // closed successfully
-            return jsonObject;
-          } catch (Throwable e) {
-            e.printStackTrace();
-          }
-        }
-      }
+    if (inputStream == null) {
+      return null;
     }
-    return null;
+    
+    try {
+      Gson gson = new Gson();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+      return gson.fromJson(reader, cls);
+    } catch (Exception e) {
+      System.err.println("Error parsing JSON: " + e.getMessage());
+      e.printStackTrace();
+      return null;
+    }
   }
 
+  @Override
+  public void close() throws IOException {
+    if (inputStream != null) {
+      inputStream.close();
+    }
+  }
 }
