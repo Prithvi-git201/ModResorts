@@ -1,0 +1,52 @@
+{
+  "serviceName": "modresorts-service",
+  "cluster": "{{CLUSTER_NAME}}",
+  "taskDefinition": "modresorts-task",
+  "desiredCount": 2,
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 50,
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    }
+  },
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "{{SUBNET_1}}",
+        "{{SUBNET_2}}"
+      ],
+      "securityGroups": [
+        "{{SECURITY_GROUP}}"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "{{TARGET_GROUP_ARN}}",
+      "containerName": "modresorts",
+      "containerPort": 8080
+    }
+  ],
+  "healthCheckGracePeriodSeconds": 300,
+  "enableECSManagedTags": true,
+  "propagateTags": "SERVICE",
+  "tags": [
+    {
+      "key": "Environment",
+      "value": "production"
+    },
+    {
+      "key": "Application",
+      "value": "modresorts"
+    },
+    {
+      "key": "ManagedBy",
+      "value": "ECS"
+    }
+  ]
+}

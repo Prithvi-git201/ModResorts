@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  modresorts-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: modresorts:latest
+    container_name: modresorts-app
+    ports:
+      - "8080:8080"
+    environment:
+      # JVM Configuration
+      - JAVA_OPTS=-Xmx512m -Xms256m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
+      - CATALINA_OPTS=-Duser.timezone=UTC
+      
+      # Application Configuration (customize as needed)
+      - APP_ENV=docker
+      - LOG_LEVEL=INFO
+      
+      # External Service Connections (configure based on your environment)
+      # - DB_HOST=your-database-host
+      # - DB_PORT=5432
+      # - DB_NAME=modresorts
+      # - DB_USER=dbuser
+      # - DB_PASSWORD=dbpassword
+      
+    volumes:
+      # Mount logs directory for persistence
+      - ./logs:/usr/local/tomcat/logs
+      
+      # Mount configuration directory (optional)
+      # - ./config:/usr/local/tomcat/conf/custom
+      
+    networks:
+      - modresorts-network
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    
+    restart: unless-stopped
+
+networks:
+  modresorts-network:
+    driver: bridge

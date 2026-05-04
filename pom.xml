@@ -13,6 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.version>2.0.0</project.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <spring.version>5.3.20</spring.version>
   </properties>
   <dependencies>
     <dependency>
@@ -21,12 +22,15 @@
       <version>7.0</version>
       <scope>provided</scope>
     </dependency>
+    <!-- Removed WebSphere-specific dependency for containerization -->
+    <!-- 
     <dependency>
       <groupId>com.ibm.websphere.appserver</groupId>
       <artifactId>was_public</artifactId>
       <version>9.0.0</version>
       <scope>provided</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -53,7 +57,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>5.3.20</version>
+      <version>${spring.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -75,7 +79,21 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>5.3.17</version>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <!-- Added Spring Web for HtmlUtils -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+    <!-- Added Spring Context for container-native features -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
     </dependency>
 
    
